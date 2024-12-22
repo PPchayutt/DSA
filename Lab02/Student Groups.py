@@ -1,8 +1,8 @@
-class ArrayStack():
+class ArrayStack:
     def __init__(self):
         self.data = list()
-        self.copyData = list()
-        self.printStack = list()
+        self.temp_data = list()
+        self.display_data = list()
 
     def push(self, input_data):
         try:
@@ -15,53 +15,54 @@ class ArrayStack():
         finally:
             self.data.append(input_data)
 
-    def pushPrint(self,group,round,total_round):
-        x = 0
-        for i in self.copyData:
-            if x == group:
-                x = 0
-            if not x:
-                self.printStack.append(i)
-            x += 1
+    def distribute_to_groups(self, group_number, current_group, total_students):
+        position = 0
+        for student in self.temp_data:
+            if position == group_number:
+                position = 0
+            if position == 0:
+                self.display_data.append(student)
+            position += 1
 
-        print(f"Group {round}: ",end="")
-        check = 0
-        for j in self.printStack:
-            check += 1
-            if check < len(self.printStack):
-                print(j+', ',end="")
+        print(f"Group {current_group}: ", end="")
+        for i, student in enumerate(self.display_data, 1):
+            if i < len(self.display_data):
+                print(f"{student}, ", end="")
             else:
-                print(j,end="\n")
+                print(student)
 
-    def clearPop(self):
-        for _ in range(len(self.printStack)):
-            if self.printStack:
-                self.printStack.pop()
-
-        if self.copyData:
-            for i in range(len(self.copyData)):
-                x = self.copyData.pop()
-                self.data.append(x)
+    def reset_data(self):
+        self.display_data.clear()
+        if self.temp_data:
+            while self.temp_data:
+                self.data.append(self.temp_data.pop())
             self.data.pop()
 
-    def popInput(self):
+    def prepare_data(self):
         if self.data:
-            x = self.data.pop()
-            self.copyData.append(x)       
-        
-def main():
-    stack = ArrayStack()
-    group = int(input())
-    total_s = int(input())
-    for _ in range(total_s):
-        text_in = input()
-        stack.push(text_in)
-    for _ in range(total_s):
-        stack.popInput()
-    for i in range(1,group+1):
-        stack.pushPrint(group,i,total_s)
-        stack.clearPop()
-        if i < group:
-            for _ in range(total_s):
-                stack.popInput()
-main()
+            student = self.data.pop()
+            self.temp_data.append(student)
+
+def manage_student_groups():
+    student_stack = ArrayStack()
+
+    number_of_groups = int(input())
+    total_students = int(input())
+
+    for _ in range(total_students):
+        name = input()
+        student_stack.push(name)
+
+    for _ in range(total_students):
+        student_stack.prepare_data()
+
+    for group in range(1, number_of_groups + 1):
+        student_stack.distribute_to_groups(number_of_groups, group, total_students)
+        student_stack.reset_data()
+
+        if group < number_of_groups:
+            for _ in range(total_students):
+                student_stack.prepare_data()
+
+if __name__ == "__main__":
+    manage_student_groups()
