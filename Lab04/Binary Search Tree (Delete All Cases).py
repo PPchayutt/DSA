@@ -105,37 +105,46 @@ class BST:
         def delete_recursive(node, value):
             if node is None:
                 return None
+
             if value < node.data:
                 node.left = delete_recursive(node.left, value)
             elif value > node.data:
                 node.right = delete_recursive(node.right, value)
             else:
                 self.deleted_value = node.data
-                
+
                 if node.left is None and node.right is None:
                     return None
-                    
+
                 if node.right is None:
                     return node.left
-                    
+
                 if node.left is None:
                     return node.right
-                    
-                max_left = node.left
-                while max_left.right:
-                    max_left = max_left.right
-                    
-                node.data = max_left.data
-                node.left = delete_recursive(node.left, max_left.data)
-            
+
+                current = node.left
+                if current.right is None:
+                    node.data = current.data
+                    node.left = current.left
+                else:
+                    parent = node
+                    while current.right:
+                        parent = current
+                        current = current.right
+                    node.data = current.data
+                    if parent != node:
+                        parent.right = current.left
+                    else:
+                        parent.left = current.left
+
             return node
-        
+
         self.root = delete_recursive(self.root, data)
-        
+
         if self.deleted_value is None:
             print(f"Delete Error, " + str(data) + " is not found in Binary Search Tree.")
             return None
-            
+
         return self.deleted_value
 
 def main():
@@ -152,4 +161,5 @@ def main():
     else:
       print("Invalid Condition")
   my_bst.traverse()
+
 main()
