@@ -1,6 +1,6 @@
 class BSTNode:
     def __init__(self, data: int=None):
-        """ > w < """4
+        """ > w < """
         self.data = data
         self.left = None
         self.right = None
