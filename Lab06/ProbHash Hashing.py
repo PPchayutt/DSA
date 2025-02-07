@@ -1,36 +1,56 @@
 class Student:
-    def __init__(self, std_id_in, name, gpa):
-        self.std_id = std_id_in
+    def __init__(self, std_id, name, gpa):
+        self.std_id = std_id
         self.name = name
         self.gpa = gpa
 
+    def get_std_id(self):
+        return self.std_id
+
+    def get_name(self):
+        return self.name
+
+    def get_gpa(self):
+        return self.gpa
+
     def print_details(self):
-        print(f"ID: {self.std_id}")
-        print(f"Name: {self.name}")
-        print(f"GPA: {self.gpa:.2f}")
+        print(f"ID: {self.get_std_id()}")
+        print(f"Name: {self.get_name()}")
+        print(f"GPA: {self.get_gpa():.2f}")
 
 class ProbHash:
-    def __init__(self, cap):
-        self.hash_table = cap * [None]
-        self.size = cap
-    
-    def hash_function(self, input_key):
-        return input_key % self.size
-    
-    def rehash_function(self, hashkey):
-        return (hashkey + 1) % self.size
-    
-    def insert_data(self, std_object: Student):
-        std_id_key = std_object.get_std_id()
-        hashkey = self.hash_function(std_id_key)
-        while self.hash_table[hashkey] != None:
-            hashkey = self.rehash_function(hashkey)
-        self.hash_table[hashkey] = std_object
-        print("Insert", std_id_key, "at index", hashkey)
+    def __init__(self, size):
+        self.size=size
+        self.hash_table = [None] * self.size
+
+    def hash(self, std_id):
+        return std_id % self.size
+
+    def rehash(self,std_id):
+        return (std_id + 1) % self.size
+
+    def insert_data(self,student):
+        index = self.hash(student.get_std_id())
+        original_index = index
+        while self.hash_table[index] is not None:
+            index = self.rehash(index)
+            if index == original_index:
+                print(f"The list is full. {student.get_std_id()} could not be inserted.")
+                return
+        self.hash_table[index] = student
+        print(f"Insert {student.get_std_id()} at index {index}")
 
     def search_data(self, std_id):
-        pass
-
+        index = self.hash(std_id)
+        original_index = index
+        while self.hash_table[index] is not None:
+            if self.hash_table[index].get_std_id() == std_id:
+                print(f"Found {std_id} at index {index}")
+                return self.hash_table[index]
+            index = self.rehash(index)
+            if index == original_index:
+                break
+        print(f"{std_id} does not exist.")
 
 def main():
     import json
